@@ -1,5 +1,7 @@
 import { Authing } from "./app";
 import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError } from "./concepts/friending";
+import { JournalDoc } from "./concepts/journaling";
+import { HighlightDoc } from "./concepts/highlighting";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/posting";
 import { Router } from "./framework/router";
 
@@ -25,6 +27,25 @@ export default class Responses {
   static async posts(posts: PostDoc[]) {
     const authors = await Authing.idsToUsernames(posts.map((post) => post.author));
     return posts.map((post, i) => ({ ...post, author: authors[i] }));
+  }
+  
+  /**
+   * Convert PostDoc into more readable format for the frontend by converting the author id into a username.
+   */
+  static async journal(journal: JournalDoc | null) {
+    if (!journal) {
+      return journal;
+    }
+    const author = await Authing.getUserById(journal.author);
+    return { ...journal, author: author.username };
+  }
+
+  /**
+   * Same as {@link journal} but for an array of JournalDoc for improved performance.
+   */
+  static async journals(journals: JournalDoc[]) {
+    const authors = await Authing.idsToUsernames(journals.map((journal) => journal.author));
+    return journals.map((journal, i) => ({ ...journal, author: authors[i] }));
   }
 
   /**
@@ -63,3 +84,5 @@ Router.registerError(AlreadyFriendsError, async (e) => {
   const [user1, user2] = await Promise.all([Authing.getUserById(e.user1), Authing.getUserById(e.user2)]);
   return e.formatWith(user1.username, user2.username);
 });
+
+

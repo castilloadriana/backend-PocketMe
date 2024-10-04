@@ -80,6 +80,44 @@ const operations: Operation[] = [
     method: "DELETE",
     fields: { id: "input" },
   },
+  {
+    name: "Create Journal",
+    endpoint: "/api/journals",
+    method: "POST",
+    fields: { name: "input" , privacy: "input" },
+  },  
+  {
+    name: "Delete Journal",
+    endpoint: "/api/journals/:id",
+    method: "DELETE",
+    fields: { id: "input"},
+  },
+  {
+    name: "Update Journal Settings",
+    endpoint: "/api/journals/:id",
+    method: "PATCH",
+    fields: { id: "input", name: "input" , privacy: "input" },
+  },  
+  {
+    name: "Create Highlight",
+    endpoint: "/api/journals",
+    method: "POST",
+    fields: { name: "input" , privacy: "input" },
+  },  
+  {
+    name: "Delete Highlight",
+    endpoint: "/api/journals/:id",
+    method: "DELETE",
+    fields: { id: "input"},
+  },
+  {
+    name: "Update Highlight ",
+    endpoint: "/api/journals/:id",
+    method: "PATCH",
+    fields: { id: "input", name: "input" , privacy: "input" },
+  }
+
+
   //
   // ...
   //

@@ -2,9 +2,11 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Authing, Friending, Posting, Sessioning } from "./app";
-import { PostOptions } from "./concepts/posting";
+import { Authing, Friending, Posting, Sessioning, Journaling, Highlighting } from "./app";
+/* import { PostOptions } from "./concepts/posting"; */
 import { SessionDoc } from "./concepts/sessioning";
+import { JournalDoc } from "./concepts/journaling";
+import { HighlightDoc } from "./concepts/highlighting";
 import Responses from "./responses";
 
 import { z } from "zod";
@@ -70,6 +72,10 @@ class Routes {
     return { msg: "Logged out!" };
   }
 
+/* 
+Posts
+ */
+
   @Router.get("/posts")
   @Router.validate(z.object({ author: z.string().optional() }))
   async getPosts(author?: string) {
@@ -84,18 +90,18 @@ class Routes {
   }
 
   @Router.post("/posts")
-  async createPost(session: SessionDoc, content: string, options?: PostOptions) {
+  async createPost(session: SessionDoc, content: string) {
     const user = Sessioning.getUser(session);
-    const created = await Posting.create(user, content, options);
+    const created = await Posting.create(user, content);
     return { msg: created.msg, post: await Responses.post(created.post) };
   }
 
   @Router.patch("/posts/:id")
-  async updatePost(session: SessionDoc, id: string, content?: string, options?: PostOptions) {
+  async updatePost(session: SessionDoc, id: string, content?: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
     await Posting.assertAuthorIsUser(oid, user);
-    return await Posting.update(oid, content, options);
+    return await Posting.update(oid, content);
   }
 
   @Router.delete("/posts/:id")
@@ -105,6 +111,10 @@ class Routes {
     await Posting.assertAuthorIsUser(oid, user);
     return Posting.delete(oid);
   }
+
+/* 
+Friends
+ */
 
   @Router.get("/friends")
   async getFriends(session: SessionDoc) {
@@ -152,8 +162,102 @@ class Routes {
     const fromOid = (await Authing.getUserByUsername(from))._id;
     return await Friending.rejectRequest(fromOid, user);
   }
-}
 
+/* 
+Journals
+ */
+
+  @Router.post("/journals")
+  async createJournal(session: SessionDoc, name: string, privacy: boolean) {
+    const user = Sessioning.getUser(session);
+    return Journaling.create(user, name, privacy);
+  }
+
+  @Router.patch("/journals/:id")
+  async updateSettingsJournal(session: SessionDoc, id: string, name: string, privacy: boolean) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+    await Journaling.assertAuthorIsUser(oid, user);
+    return await Journaling.update(oid, name, privacy);
+  }
+
+  @Router.delete("/journals/:id")
+  async deleteJournal(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+    await Posting.assertAuthorIsUser(oid, user);
+    return Posting.delete(oid);
+    //eventually link it with posts, if journal is deleted posts too
+  }
+
+  @Router.get("/journals")
+  @Router.validate(z.object({ author: z.string().optional() }))
+  async getJournals(author?: string) {
+    let journals;
+    if (author) {
+      const id = (await Authing.getUserByUsername(author))._id;
+      journals = await Journaling.getByAuthor(id);
+    } else {
+      journals = await Journaling.getJournals();
+    }
+    return Responses.journals(journals);
+  }
+
+/* 
+Highlights
+ */
+  @Router.post("/highlights")
+  async createHighlight(session: SessionDoc, name: string, privacy: boolean) {
+    const user = Sessioning.getUser(session);
+    return Journaling.create(user, name, privacy);
+  }
+
+  @Router.patch("/highlights/:id")
+  async updateHighlight(session: SessionDoc, id: string, comment: string, quote?: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+    await Highlighting.assertAuthorIsUser(oid, user);
+    return await Highlighting.update(oid, comment, quote);
+  }
+
+  @Router.delete("/highlights/:id")
+  async deleteHighlight(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const oid = new ObjectId(id);
+    await Posting.assertAuthorIsUser(oid, user);
+    return Posting.delete(oid);
+  }
+
+/* 
+Stickies
+ */
+// @Router.post("/Stickies")
+// async addSticky(session: SessionDoc, name: string, privacy: boolean) {
+
+// }
+
+// @Router.delete("/bookmarks/:id")
+// async deleteSticky(session: SessionDoc, id: string) {
+
+// }
+
+
+
+
+/* 
+Bookmarks
+ */
+
+// @Router.post("/bookmarks")
+// async bookmark(session: SessionDoc, name: string, privacy: boolean) {
+
+// }
+
+// @Router.delete("/bookmarks/:id")
+// async deleteBookmark(session: SessionDoc, id: string) {
+
+// }
+}
 /** The web app. */
 export const app = new Routes();
 
