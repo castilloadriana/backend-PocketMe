@@ -66,13 +66,13 @@ const operations: Operation[] = [
     name: "Create Post",
     endpoint: "/api/posts",
     method: "POST",
-    fields: { content: "input" },
+    fields: { content: "input", parent: "input" },
   },
   {
     name: "Update Post",
     endpoint: "/api/posts/:id",
     method: "PATCH",
-    fields: { id: "input", content: "input", options: { backgroundColor: "input" } },
+    fields: { id: "input", content: "input", journal: "input" },
   },
   {
     name: "Delete Post",
@@ -90,33 +90,82 @@ const operations: Operation[] = [
     name: "Delete Journal",
     endpoint: "/api/journals/:id",
     method: "DELETE",
-    fields: { id: "input"},
+    fields: { journalid: "input"},
   },
   {
     name: "Update Journal Settings",
     endpoint: "/api/journals/:id",
     method: "PATCH",
-    fields: { id: "input", name: "input" , privacy: "input" },
-  },  
+    fields: { journalid: "input", name: "input" , privacy: "input" },
+  },    
+  {
+    name: "Get Journals and their posts, (empty for all)",
+    endpoint: "/api/journals",
+    method: "GET",
+    fields: { username: "input" },
+  },
   {
     name: "Create Highlight",
-    endpoint: "/api/journals",
+    endpoint: "/api/highlights",
     method: "POST",
-    fields: { name: "input" , privacy: "input" },
+    fields: { Postid:"input", comment: "input" , privacy: "input" },
   },  
   {
     name: "Delete Highlight",
-    endpoint: "/api/journals/:id",
+    endpoint: "/api/highlights/:id",
     method: "DELETE",
-    fields: { id: "input"},
+    fields: { highlightid: "input"},
   },
   {
     name: "Update Highlight ",
-    endpoint: "/api/journals/:id",
+    endpoint: "/api/highlights/:id",
     method: "PATCH",
-    fields: { id: "input", name: "input" , privacy: "input" },
-  }
+    fields: { highlightid: "input", comment: "input" , privacy: "input" },
+  },  
+  {
+    name: "Get Highlights for a post",
+    endpoint: "/api/highlights",
+    method: "GET",
+    fields: { postid: "input" },
+  },
+  {
+    name: "Add sticker",
+    endpoint: "/api/stickers",
+    method: "POST",
+    fields: { postid: "input", sticker: "input"},
+  },
+  {
+    name: "Delete Sticker",
+    endpoint: "/stickers/:id",
+    method: "DELETE",
+    fields: { postid: "input" },
+  },
+  {
+    name: "Update Sticker",
+    endpoint: "/stickers/:id",
+    method: "PATCH",
+    fields: { postid: "input", sticker: "input" },
+  },
 
+
+  {
+    name: "Add bookmark to a post",
+    endpoint: "/api/bookmarks",
+    method: "POST",
+    fields: { postid: "input" },
+  },
+  {
+    name: "Get Bookmarks for an author (empty for all)",
+    endpoint: "/api/bookmarks",
+    method: "GET",
+    fields: { author: "input" },
+  },
+  {
+    name: "Remove bookmark from post",
+    endpoint: "/api/bookmarks",
+    method: "DELETE",
+    fields: { postid: "input" },
+  },
 
   //
   // ...

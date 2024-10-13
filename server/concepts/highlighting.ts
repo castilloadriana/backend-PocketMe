@@ -29,8 +29,8 @@ export default class HighlightingConcept {
     this.highlights = new DocCollection<HighlightDoc>(collectionName);
   }
 
-  async create(author:ObjectId, comment:string, media: ObjectId, quote?: string ) {
-    const _id = await this.highlights.createOne({ author, comment, media, quote});
+  async create(author:ObjectId, media: ObjectId, comment:string, quote?: string ) {
+    const _id = await this.highlights.createOne({ author, media, comment, quote});
     return { msg: "Post successfully created!", post: await this.highlights.readOne({ _id }) };
   }
 
@@ -39,8 +39,13 @@ export default class HighlightingConcept {
     return await this.highlights.readMany({}, { sort: { _id: -1 } });
   }
 
+
+  async getByMedia( media: ObjectId) {
+    //Gets all the highlights made on one post 
+    return await this.highlights.readMany({ media});
+  }
+
   async update(_id: ObjectId, comment: string, quote?: string) {
-    // Note that if content or options is undefined, those fields will *not* be updated
     // since undefined values for partialUpdateOne are ignored.
     await this.highlights.partialUpdateOne({ _id }, { comment, quote });
     return { msg: "Post successfully updated!" };
