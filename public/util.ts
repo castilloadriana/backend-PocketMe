@@ -66,7 +66,7 @@ const operations: Operation[] = [
     name: "Create Post",
     endpoint: "/api/posts",
     method: "POST",
-    fields: { content: "input", parent: "input" },
+    fields: { journalid: "input", content: "input" },
   },
   {
     name: "Update Post",
@@ -88,13 +88,13 @@ const operations: Operation[] = [
   },  
   {
     name: "Delete Journal",
-    endpoint: "/api/journals/:id",
+    endpoint: "/api/journals",
     method: "DELETE",
     fields: { journalid: "input"},
   },
   {
     name: "Update Journal Settings",
-    endpoint: "/api/journals/:id",
+    endpoint: "/api/journals",
     method: "PATCH",
     fields: { journalid: "input", name: "input" , privacy: "input" },
   },    
@@ -102,25 +102,25 @@ const operations: Operation[] = [
     name: "Get Journals and their posts, (empty for all)",
     endpoint: "/api/journals",
     method: "GET",
-    fields: { username: "input" },
+    fields: { author: "input" },
   },
   {
     name: "Create Highlight",
     endpoint: "/api/highlights",
     method: "POST",
-    fields: { Postid:"input", comment: "input" , privacy: "input" },
+    fields: { postid:"input", comment: "input", quote: "input" },
   },  
   {
     name: "Delete Highlight",
     endpoint: "/api/highlights/:id",
     method: "DELETE",
-    fields: { highlightid: "input"},
+    fields: { id: "input"},
   },
   {
     name: "Update Highlight ",
     endpoint: "/api/highlights/:id",
     method: "PATCH",
-    fields: { highlightid: "input", comment: "input" , privacy: "input" },
+    fields: { id: "input", comment: "input"},
   },  
   {
     name: "Get Highlights for a post",
@@ -136,15 +136,15 @@ const operations: Operation[] = [
   },
   {
     name: "Delete Sticker",
-    endpoint: "/stickers/:id",
+    endpoint: "/api/stickers/",
     method: "DELETE",
     fields: { postid: "input" },
   },
   {
     name: "Update Sticker",
-    endpoint: "/stickers/:id",
+    endpoint: "/api/stickers/:id",
     method: "PATCH",
-    fields: { postid: "input", sticker: "input" },
+    fields: { id: "input", sticker: "input" },
   },
 
 

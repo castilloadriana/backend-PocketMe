@@ -2,13 +2,9 @@ import { ObjectId } from "mongodb";
 
 import { Router, getExpressRouter } from "./framework/router";
 
-import { Authing, Friending, Posting, Sessioning, Journaling, Highlighting, Sticking, Bookmarking } from "./app";
+import { Authing, Bookmarking, Friending, Highlighting, Journaling, Posting, Sessioning, Sticking } from "./app";
 /* import { PostOptions } from "./concepts/posting"; */
 import { SessionDoc } from "./concepts/sessioning";
-import { JournalDoc } from "./concepts/journaling";
-import { HighlightDoc } from "./concepts/highlighting";
-import { StickerDoc } from "./concepts/sticking";
-import { BookmarkDoc } from "./concepts/bookmarking";
 import Responses from "./responses";
 
 import { z } from "zod";
@@ -136,21 +132,21 @@ Journals
     return Journaling.create(user, name, privacy);
   }
 
-  @Router.patch("/journals/:id")
-  async updateSettingsJournal(session: SessionDoc, id: string, name: string, privacy: boolean) {
+  @Router.patch("/journals")
+  async updateSettingsJournal(session: SessionDoc, journalid: string, name: string, privacy: boolean) {
     const user = Sessioning.getUser(session);
-    const oid = new ObjectId(id);
+    const oid = new ObjectId(journalid);
     await Journaling.assertAuthorIsUser(oid, user);
     return await Journaling.update(oid, name, privacy);
   }
 
-  @Router.delete("/journals/:id")
+  @Router.delete("/journals")
   async deleteJournal(session: SessionDoc, journalid: string) {
     const user = Sessioning.getUser(session);
     const journaloid = new ObjectId(journalid);
-    await Posting.assertAuthorIsUser(journaloid, user);
+    await Journaling.assertAuthorIsUser(journaloid, user);
     await Posting.deletePosts(journaloid); //deletes the posts inside the journal array 
-    return Posting.delete(journaloid); //deletes de journal object
+    return Journaling.delete(journaloid); //deletes de journal object
     
   }
 
@@ -160,9 +156,9 @@ Journals
     let journals;
     if (author) {
       const id = (await Authing.getUserByUsername(author))._id;
-      return journals = await Journaling.getByAuthor(id);
+      return await Journaling.getByAuthor(id);
     } else {
-      return journals = await Journaling.getJournals();
+      return await Journaling.getJournals();
     }
     //return Responses.journals(journals);
   }
@@ -262,8 +258,8 @@ Highlights
   async deleteHighlight(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
-    await Posting.assertAuthorIsUser(oid, user);
-    return Posting.delete(oid);
+    await Highlighting.assertAuthorIsUser(oid, user);
+    return Highlighting.delete(oid);
   }
 
   @Router.get("/highlights") //get highlights by post
@@ -282,7 +278,7 @@ async createSticker(session: SessionDoc, postid: string, sticker: string) {
   return Sticking.create(user, post0id, sticker);
 }
 
-@Router.patch("/stickers/:id")
+@Router.patch("/stickers")
 async updateSticker(session: SessionDoc, id: string, sticker: string) {
   const user = Sessioning.getUser(session);
   const oid = new ObjectId(id);
@@ -290,7 +286,7 @@ async updateSticker(session: SessionDoc, id: string, sticker: string) {
   return await Sticking.update(oid, sticker);
 }
 
-@Router.delete("/stickers/:id")
+@Router.delete("/stickers")
 async deleteSticker(session: SessionDoc, postid: string) {
   const user = Sessioning.getUser(session);
   const oid = new ObjectId(postid);

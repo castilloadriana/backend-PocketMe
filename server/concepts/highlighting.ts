@@ -31,7 +31,7 @@ export default class HighlightingConcept {
 
   async create(author:ObjectId, media: ObjectId, comment:string, quote?: string ) {
     const _id = await this.highlights.createOne({ author, media, comment, quote});
-    return { msg: "Post successfully created!", post: await this.highlights.readOne({ _id }) };
+    return { msg: "Highlight successfully created!", highlight: await this.highlights.readOne({ _id }) };
   }
 
   async getHighlights() {
@@ -48,12 +48,12 @@ export default class HighlightingConcept {
   async update(_id: ObjectId, comment: string, quote?: string) {
     // since undefined values for partialUpdateOne are ignored.
     await this.highlights.partialUpdateOne({ _id }, { comment, quote });
-    return { msg: "Post successfully updated!" };
+    return { msg: "Highlight successfully updated!" };
   }
 
   async delete(_id: ObjectId) {
     await this.highlights.deleteOne({ _id });
-    return { msg: "Post deleted successfully!" };
+    return { msg: "Highlight deleted successfully!" };
   }
   
   async assertAuthorIsUser(_id: ObjectId, user: ObjectId) {
