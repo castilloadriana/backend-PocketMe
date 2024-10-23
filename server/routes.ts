@@ -174,20 +174,6 @@ Journals
 
 
 
-  // @Router.post("/journals/:journalid/posts/:postid") 
-  // async addJournalToPost(session:SessionDoc, journalid: string, postid: string) {
-  //   const user = Sessioning.getUser(session);
-  //   const journalOid = new ObjectId(journalid);
-  //   // assertCreatorIsUser was not implemented in recitaiton so I'm leaving it commented out in the solutions
-  //   // in order to not throw any errors, but in reality, we should assert that the current logged in
-  //   // user is the creator of the label before allowing the user to affix the label to an item. 
-  //   // await Labeling.assertCreatorIsUser(labelOid, user);   
-  //   const postOid = new ObjectId(postid);
-  //   await Posting.assertAuthorIsUser(postOid, user);
-  //   return Journaling.addToJournal(journalOid, postOid);
-  // }
-
-
 /* 
 Posts
  */
@@ -315,11 +301,6 @@ async addBookmark(session: SessionDoc, postid: string) {
   const user = Sessioning.getUser(session);
   const post0id = new ObjectId(postid);
 
-  //has to check if they even have bookmarks yet or else it creates the bookmark folder
-  const bookmarkFolder = await Bookmarking.getByAuthor(user);
-  if (!bookmarkFolder) {
-    await Bookmarking.create(user);
-  } 
   return Bookmarking.addToBookmarks(user, post0id);
 }
 
