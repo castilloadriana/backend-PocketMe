@@ -31,14 +31,14 @@ export default class StickingConcept {
   }
 
   async getByMedia( media: ObjectId) {
-    //Gets all the highlights made on one post 
+    //Gets all the stickers made on one post 
     return await this.stickers.readMany({ media});
   }
 
   async update(_id: ObjectId, sticker: string ) {
     // Note that if content or options is undefined, those fields will *not* be updated
     // since undefined values for partialUpdateOne are ignored.
-    await this.stickers.partialUpdateOne({ _id }, {sticker });
+    await this.stickers.partialUpdateOne({ _id }, { sticker });
     return { msg: "Sticker successfully updated!" };
   }
 
@@ -50,7 +50,7 @@ export default class StickingConcept {
   async assertAuthorIsUser(_id: ObjectId, user: ObjectId) {
     const highlight = await this.stickers.readOne({ _id });
     if (!highlight) {
-      throw new NotFoundError(`Highlight ${_id} does not exist!`);
+      throw new NotFoundError(`Sticker ${_id} does not exist!`);
     }
     if (highlight.author.toString() !== user.toString()) {
       throw new HighlightAuthorNotMatchError(user, _id);

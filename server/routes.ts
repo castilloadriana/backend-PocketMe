@@ -150,18 +150,29 @@ Journals
     
   }
 
-  @Router.get("/journals") //get posts by author
+
+
+  @Router.get("/journals") //get journals by author
   @Router.validate(z.object({ author: z.string().optional() }))
-  async getJournals(author?: string) {
+  async getJournals(session: SessionDoc, author?: string) {
+    const user = Sessioning.getUser(session);
     let journals;
     if (author) {
-      const id = (await Authing.getUserByUsername(author))._id;
-      return await Journaling.getByAuthor(id);
+      const idAuthor = (await Authing.getUserByUsername(author))._id;
+      if (idAuthor == user){
+        journals = await Journaling.getByAuthor(idAuthor); // this function gives both public & private journals
+      } else{
+        journals = await Journaling.getByAuthorPublic(idAuthor);
+      }
+
     } else {
-      return await Journaling.getJournals();
+      journals = await Journaling.getJournalsPublic();
     }
-    //return Responses.journals(journals);
+    return Responses.journals(journals);
   }
+
+
+
 
   // @Router.post("/journals/:journalid/posts/:postid") 
   // async addJournalToPost(session:SessionDoc, journalid: string, postid: string) {
@@ -287,9 +298,9 @@ async updateSticker(session: SessionDoc, id: string, sticker: string) {
 }
 
 @Router.delete("/stickers")
-async deleteSticker(session: SessionDoc, postid: string) {
+async deleteSticker(session: SessionDoc, id: string) {
   const user = Sessioning.getUser(session);
-  const oid = new ObjectId(postid);
+  const oid = new ObjectId(id);
   await Sticking.assertAuthorIsUser(oid, user);
   return Sticking.delete(oid);
 }
@@ -308,7 +319,7 @@ async addBookmark(session: SessionDoc, postid: string) {
   const bookmarkFolder = await Bookmarking.getByAuthor(user);
   if (!bookmarkFolder) {
     await Bookmarking.create(user);
-  }
+  } 
   return Bookmarking.addToBookmarks(user, post0id);
 }
 

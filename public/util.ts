@@ -136,13 +136,13 @@ const operations: Operation[] = [
   },
   {
     name: "Delete Sticker",
-    endpoint: "/api/stickers/",
+    endpoint: "/api/stickers",
     method: "DELETE",
-    fields: { postid: "input" },
+    fields: { id: "input" },
   },
   {
     name: "Update Sticker",
-    endpoint: "/api/stickers/:id",
+    endpoint: "/api/stickers",
     method: "PATCH",
     fields: { id: "input", sticker: "input" },
   },
